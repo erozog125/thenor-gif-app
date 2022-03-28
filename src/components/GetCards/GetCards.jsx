@@ -2,48 +2,53 @@ import React,{useState} from 'react';
 import { InputUI } from '../InputUI/InputUI';
 import { GifImg } from '../GifImg/GifImg';
 import axios from 'axios';
+import { ButtonUI } from '../ButtonUI/ButtonUI';
 
 // Docs: https://tenor.com/developer/dashboard
 // Docs2: https://tenor.com/gifapi/documentation#endpoints
-// api_key: B5S1TNIXJSEY
+// api_key: DMHFGEWPEFHD
 
 export const GetCards = () => {
 
-  const [gif, setGif] = useState([]);
-  const URL = "https://g.tenor.com/v1/search?";
-  const key = "B5S1TNIXJSEY";
-  const query = "&q="
-  const limit = "&limit=16";
+  const [cards, setCards] = useState([]);
+  const URL = "https://g.tenor.com/v1/trending?key=DMHFGEWPEFHD";
+  
+  const customGif = (event) => {
 
+    const URL = "https://g.tenor.com/v1/search?"  
+    const key = "DMHFGEWPEFHD";
+    const query = `q=${event.target.value}`
+    const limit = "&limit=16";
 
-  const getGifs = (event) => {
-    console.log(event.target.value);
-    if (event.keyCode == 13) {
-      console.log('entra');
-      // axios.post(`${URL}${key}${query}${encodeURI(event.target.value)}${limit}`)    
-      fetch(`${URL}${key}${query}${event.target.value}${limit}`)    
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setGif(data.results);
-      })      
-    }
+    fetch(`${URL}${query}&key=${key}${limit}`)
+    .then(response => response.json())
+    .then(data => setCards(data.results))
   }
 
+  const getGifs = () => {      
+    fetch(URL)    
+    .then(response => response.json())
+    .then(data => {      
+      setCards(data.results);
+
+    })      
+  }  
+  
   return (
     <>
       <h1>Gif Generator</h1>
       <hr />
-      <InputUI event={getGifs} />
+      <InputUI event={customGif} />
+      <ButtonUI trying={getGifs} />
       <main className='main-gif'>
-        {/* {
-          gif.map(card => (
+        {
+          cards.map(card => (
             <GifImg
-            key={card.id+card.title}
-            image={card.media[0].gif.url}
-            name={card.title}
+            key={card.id}
+            image={card.media[0].mediumgif.url}
+            name={card.content_description}
             />))
-        } */}
+        }
       </main>    
     </>
   )
